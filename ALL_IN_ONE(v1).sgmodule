@@ -1,0 +1,41 @@
+#!name=YouTube, Spotify & Locket Gold (Premium Bundle)
+#!desc=Hợp nhất Premium cho YouTube, Spotify và Locket Gold (By Hoan IT & NgDanhThanhTrung).
+#!system=ios
+
+[General]
+# Giúp giả lập thông tin thiết bị cho Locket
+user-agent = Locket/1.0.0 (iPhone; iOS 26; Scale/3.00)
+
+[Rule]
+DOMAIN-SUFFIX,googlevideo.com,DIRECT
+DOMAIN-SUFFIX,youtubei.googleapis.com,DIRECT
+DOMAIN-SUFFIX,api.revenuecat.com,DIRECT
+
+[Header Rewrite]
+# Tối ưu hóa cho Spotify Premium
+^https:\/\/(spclient\.wg\.spotify\.com|.*-spclient\.spotify\.com(:443)?)\/user-customization-service\/v1\/customize$ header-del if-none-match
+
+[Script]
+# --- YouTube Premium (No Ads, Background Play) ---
+youtube.response = type=http-response,pattern=^https:\/\/youtubei\.googleapis\.com\/youtubei\/v1\/(browse|next|player|search|reel\/reel_watch_sequence|guide|account\/get_setting|get_watch),requires-body=1,max-size=-1,binary-body-mode=1,script-path=https://raw.githubusercontent.com/Maasea/sgmodule/refs/heads/master/Script/Youtube/youtube.response.js,argument="{\"lyricLang\":\"{{null}}\",\"captionLang\":\"{{{null}}}\",\"blockUpload\":{{{true}}},\"blockImmersive\":{{{true}}},\"debug\":{{{false}}}}"
+
+# --- Spotify Premium ---
+spotify-json = type=http-request,pattern=^https:\/\/(spclient\.wg\.spotify\.com|.*-spclient\.spotify\.com(:443)?)\/(artistview\/v1\/artist|album-entity-view\/v2\/album)\/,requires-body=0,script-path=https://raw.githubusercontent.com/app2smile/rules/master/js/spotify-json.js
+spotify-proto = type=http-response,pattern=^https:\/\/(spclient\.wg\.spotify\.com|.*-spclient\.spotify\.com(:443)?)\/(bootstrap\/v1\/bootstrap|user-customization-service\/v1\/customize)$,requires-body=1,binary-body-mode=1,max-size=0,script-path=https://raw.githubusercontent.com/app2smile/rules/master/js/spotify-proto.js,script-update-interval=0
+
+# --- Locket Gold (By Hoan IT - Tricker Channel) ---
+revenuecat = type=http-response, pattern=^https:\/\/api\.revenuecat\.com\/.*\/(receipts$|subscribers\/[^/]+$), script-path=https://raw.githubusercontent.com/trickerchannel/shadowrocket/refs/heads/main/LocketGold.js, requires-body=true, max-size=-1, timeout=120
+deleteHeader = type=http-request, pattern=^https:\/\/api\.revenuecat\.com\/.*\/(receipts|subscribers), script-path=https://raw.githubusercontent.com/trickerchannel/shadowrocket/refs/heads/main/deleteheader.js, timeout=120
+
+https://ahrefs.com/writing-tools/paragraph-rewriter
+# Chặn quảng cáo YouTube
+^https?:\/\/[\w-]+\.googlevideo\.com\/initplayback.+&oad _ REJECT-IMG
+https?:\/\/.+\.googlevideo\.com\/ptracking\?pltype=adhost _ REJECT
+https?:\/\/.+\.youtube\.com\/api\/stats\/.+adformat _ REJECT
+https?:\/\/m\.youtube\.com\/_get_ads _ REJECT
+https?:\/\/pagead2\.googlesyndication\.com\/pagead\/ _ REJECT
+https?:\/\/s\.youtube\.com\/api\/stats\/watchtime?adformat _ REJECT
+https?:\/\/youtubei\.googleapis\.com/.+ad_break _ REJECT
+
+[MITM]
+hostname = %APPEND% *.googlevideo.com, youtubei.googleapis.com, api.revenuecat.com, raw.githubusercontent.com, spclient.wg.spotify.com, *-spclient.spotify.com
