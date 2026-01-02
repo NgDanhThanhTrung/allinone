@@ -1,9 +1,9 @@
-#!url=https://raw.githubusercontent.com/NgDanhThanhTrung/allinone/refs/heads/main/ALL_IN_ONE.sgmobile
-#!name=YouTube_Spotify_Locket
-#!desc=Module tổng hợp: YouTube Premium, Spotify Premium & Locket Gold
-#!system=ios
-#!category=Combined
-#!By: NgDanhThanhTrung
+#!url = https://raw.githubusercontent.com/NgDanhThanhTrung/allinone/refs/heads/main/ALL_IN_ONE.sgmobile
+#!name = YouTube_Spotify_Locket
+#!desc = Module tổng hợp: YouTube Premium, Spotify Premium & Locket Gold. Bản quyền thuộc về NgDanhThanhTrung.
+#!system = ios
+#!category = Combined
+#!author = NgDanhThanhTrung
 
 [Rule]
 DOMAIN-SUFFIX,googlevideo.com,DIRECT
@@ -24,15 +24,20 @@ https?:\/\/youtubei\.googleapis\.com/.+ad_break _ REJECT
 
 [Script]
 # --- YouTube ---
+# Chặn quảng cáo và kích hoạt tính năng Premium cho YouTube
 youtube.response = type=http-response,pattern=^https:\/\/youtubei\.googleapis\.com\/youtubei\/v1\/(browse|next|player|search|reel\/reel_watch_sequence|guide|account\/get_setting|get_watch),requires-body=1,max-size=-1,binary-body-mode=1,script-path=https://raw.githubusercontent.com/Maasea/sgmodule/refs/heads/master/Script/Youtube/youtube.response.js,argument="{\"lyricLang\":\"{{null}}\",\"captionLang\":\"{{{null}}}\",\"blockUpload\":{{{true}}},\"blockImmersive\":{{{true}}},\"debug\":{{{false}}}}"
 
 # --- Spotify ---
+# Mở khóa các tính năng Premium cho Spotify
 spotify-json = type=http-request,pattern=^https:\/\/(spclient\.wg\.spotify\.com|.*-spclient\.spotify\.com(:443)?)\/(artistview\/v1\/artist|album-entity-view\/v2\/album)\/,requires-body=0,script-path=https://raw.githubusercontent.com/app2smile/rules/master/js/spotify-json.js
 spotify-proto = type=http-response,pattern=^https:\/\/(spclient\.wg\.spotify\.com|.*-spclient\.spotify\.com(:443)?)\/(bootstrap\/v1\/bootstrap|user-customization-service\/v1\/customize)$,requires-body=1,binary-body-mode=1,max-size=0,script-path=https://raw.githubusercontent.com/app2smile/rules/master/js/spotify-proto.js,script-update-interval=0
 
-# --- Locket Gold ---
-revenuecat = type=http-response, pattern=^https:\/\/api\.revenuecat\.com\/.+\/(receipts$|subscribers\/[^/]+$), script-path=https://raw.githubusercontent.com/vuong2023/shad/main/js/Locket_Ohoang7.js, requires-body=true, max-size=-1, timeout=60
-deleteHeader = type=http-request, pattern=^https:\/\/api\.revenuecat\.com\/.+\/(receipts|subscribers), script-path=https://raw.githubusercontent.com/vuong2023/shad/main/js/deleteHeader.js, timeout=60
+# --- Locket Gold (Updated By NgDanhThanhTrung) ---
+# Sử dụng script từ kho lưu trữ cá nhân của NgDanhThanhTrung
+revenuecat = type=http-response, pattern=^https:\/\/api\.revenuecat\.com\/.+\/(receipts$|subscribers\/[^/]+$), script-path=https://raw.githubusercontent.com/NgDanhThanhTrung/modules/main/LOCKET/Locket_Gold.js, requires-body=true, max-size=-1, timeout=60
 
+deleteHeader = type=http-request, pattern=^https:\/\/api\.revenuecat\.com\/.+\/(receipts|subscribers), script-path=https://raw.githubusercontent.com/NgDanhThanhTrung/modules/main/LOCKET/deleteHeader.js, timeout=60
+
+# ================= MITM =================
 [MITM]
 hostname = %APPEND% *.googlevideo.com, youtubei.googleapis.com, api.revenuecat.com, spclient.wg.spotify.com, *-spclient.spotify.com
